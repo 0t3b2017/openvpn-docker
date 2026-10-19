@@ -1,0 +1,21 @@
+# OpenVPN client profiles and private keys
+*.ovpn
+*.key
+ca.key
+
+# PKI and generated server data
+pki/
+ovpn-data/
+openvpn-data/
+
+# Local environment and secrets
+.env
+.env.*
+*.pem
+*.p12
+*.pfx
+
+# Logs and temporary files
+*.log
+*.tmp
+.*.ovpn.tmp.*
