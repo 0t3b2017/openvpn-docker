@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-`install-openvpn-final.sh` automates deployment of an OpenVPN server in Docker on a clean Ubuntu virtual machine. It also provides a separate mode to create additional client profiles without rerunning the full installation.
+`install-openvpn.sh` automates deployment of an OpenVPN server in Docker on a clean Ubuntu virtual machine. It also provides a separate mode to create additional client profiles without rerunning the full installation.
 
 The script uses `lisenet/openvpn:2.6.11-build27`. Its default VPN subnet is `172.27.255.0/24`; the endpoint, port, DNS servers, client name, MSS setting, and outbound interface are configurable near the top of the script.
 
@@ -44,7 +44,7 @@ Client-add mode reuses the existing running container and PKI. It creates a cert
 
 ## 4. Configuration Variables
 
-Edit the variables near the top of `install-openvpn-final.sh` **before the first installation**.
+Edit the variables near the top of `install-openvpn.sh` **before the first installation**.
 
 | Variable | Default | Purpose |
 |---|---|---|
@@ -73,24 +73,24 @@ Edit the variables near the top of `install-openvpn-final.sh` **before the first
 
 ### 5.1 Review the configuration
 
-Copy `install-openvpn-final.sh` to the new Ubuntu server and edit the variables above. In particular, set `OVPN_HOST`, `VPN_SUBNET`, and `CLIENT_NAME`.
+Copy `install-openvpn.sh` to the new Ubuntu server and edit the variables above. In particular, set `OVPN_HOST`, `VPN_SUBNET`, and `CLIENT_NAME`.
 
 Optionally set restrictive permissions:
 
 ```bash
-chmod 700 install-openvpn-final.sh
+chmod 700 install-openvpn.sh
 ```
 
 ### 5.2 Run the installation
 
 ```bash
-sudo bash ./install-openvpn-final.sh
+sudo bash ./install-openvpn.sh
 ```
 
 Or, if executable:
 
 ```bash
-sudo ./install-openvpn-final.sh
+sudo ./install-openvpn.sh
 ```
 
 The script installs/configures Docker as needed, initializes the OpenVPN server, configures NAT persistence, and generates the initial client profile.
@@ -99,12 +99,12 @@ During PKI initialization, follow the prompts and securely retain the CA passphr
 
 ### 5.3 Cloud-init
 
-The script can be invoked by cloud-init after it has been placed on the VM. For example, if it is already present at `/root/install-openvpn-final.sh`:
+The script can be invoked by cloud-init after it has been placed on the VM. For example, if it is already present at `/root/install-openvpn.sh`:
 
 ```yaml
 #cloud-config
 runcmd:
-  - [bash, /root/install-openvpn-final.sh]
+  - [bash, /root/install-openvpn.sh]
 ```
 
 **Unattended deployment caveat:** PKI initialization is interactive. A fully unattended cloud-init deployment needs a deliberate, secure method for handling CA initialization; do not assume prompts can be answered automatically.
@@ -114,7 +114,7 @@ runcmd:
 ### 6.1 Display help
 
 ```bash
-sudo bash ./install-openvpn-final.sh --help
+sudo bash ./install-openvpn.sh --help
 ```
 
 This exits without running the installation.
@@ -122,10 +122,10 @@ This exits without running the installation.
 ### 6.2 Add a client to an existing server
 
 ```bash
-sudo bash ./install-openvpn-final.sh --add-client celular
+sudo bash ./install-openvpn.sh --add-client winclient
 ```
 
-Replace `celular` with the desired client name. Names must start with a letter or number and may contain letters, numbers, periods, hyphens, and underscores, up to 64 characters.
+Replace `winclient` with the desired client name. Names must start with a letter or number and may contain letters, numbers, periods, hyphens, and underscores, up to 64 characters.
 
 This mode:
 - Does not run the full installation.
@@ -139,7 +139,7 @@ This mode:
 For example:
 
 ```bash
-sudo bash ./install-openvpn-final.sh --add-client tablet
+sudo bash ./install-openvpn.sh --add-client tablet
 ```
 
 This creates `tablet.ovpn` in the current directory. Because the script runs as root, the file may be owned by root. Transfer it securely or adjust ownership only as needed.
@@ -207,13 +207,13 @@ The OpenVPN container uses Docker's `unless-stopped` restart policy. The systemd
 Install a server on a clean supported Ubuntu VM:
 
 ```bash
-sudo bash ./install-openvpn-final.sh
+sudo bash ./install-openvpn.sh
 ```
 
 Generate another client profile on an existing server:
 
 ```bash
-sudo bash ./install-openvpn-final.sh --add-client celular
+sudo bash ./install-openvpn.sh --add-client winclient2
 ```
 
 The first command installs the server and generates the initial client profile. The second reuses the existing server and PKI to create an additional profile. Review the variables before installation and protect all generated credentials and the `ovpn-data` volume.
